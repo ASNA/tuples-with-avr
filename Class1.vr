@@ -1,0 +1,135 @@
+﻿Using System
+Using System.Text
+Using System.Collections.Generic
+
+BegClass Program
+    BegSr Main Shared(*Yes) Access(*Public) Attributes(System.STAThread())
+        DclSrParm args Type(*String) Rank(1)
+
+        DclFld t Type(TesterTuple) New()         
+        t.Run()            
+
+        DclFld c Type(TesterClass) New()
+        c.Run()
+
+        Console.WriteLine("Press any key to continue...") 
+        Console.ReadKey()
+    EndSr
+EndClass
+
+BegClass TesterTuple 
+
+    BegSr Run Access(*Public) 
+        DclFld Name Type(*String) 
+        DclFld Rate Type(*Packed) Len(12,2) 
+
+        // Declare a Tuple with a String and System.Decimal member. 
+        DclFld NameAndRate Type(System.Tuple(*Of *String, System.Decimal)) 
+
+        // Get the name and rate.             
+        NameAndRate = GetNameAndRate()
+
+        // Assign values from the Tuple. 
+        Name = NameAndRate.Item1
+        Rate = NameAndRate.Item2
+
+        Console.WriteLine("Using tuples to pass values around")
+        Console.WriteLine(String.Format("Name = {0}, Rate = {1}", Name, Rate))
+    EndSr 
+
+    BegFunc GetNameAndRate Type(Tuple(*Of *String, System.Decimal))      
+        // Declare work fields. 
+        DclFld Name Type(*String) 
+        DclFld Rate Type(*Packed) Len(12,2) 
+
+        // Assign values to the work fields. In production you'd probably
+        // fetch these values from a disk file or some other data store.
+        Name = 'Neil Young' 
+        Rate = 72.12 
+
+        // Instance a new Tuple. Tuples are immutable (their values can't 
+        // change). This return value will be read-only to its consumer.
+        LeaveSr *New Tuple(*Of *String, System.Decimal)(Name, Rate)  
+
+        /*
+        The line of AVR above corresponds to this C#
+
+        return new Tuple<string, decimal>("Neil Young", 72.12M);
+
+        
+        Declaring the tuple in C#         
+        Tuple<string, decimal> NameAndRate = new Tuple<string, decimal>("Neil Young", 72.12M);
+
+
+        Note that C# generic declarations like this:
+        Tuple<string, decimal>
+
+        Are written like this in AVR:
+        Tuple(*Of *String, *Of System.Decimal) 
+
+        This pattern is consistent with AVR's use of other generic declarations.
+
+        For example, here is a generic list declaration in C# and AVR. 
+
+        List<string, decimal>
+
+        Are written like this in AVR:
+        List(*Of *String, *Of System.Decimal) 
+
+        */
+    EndFunc
+
+EndClass 
+
+BegClass TesterClass
+
+    BegSr Run Access(*Public) 
+        DclFld nar Type(NameAndRate) New()        
+        DclFld Name Type(*String) 
+        DclFld Rate Type(*Packed) Len(12,2) 
+
+        // Get the name and rate.             
+        nar = GetNameAndRate()
+
+        // Assign values from the class instance.
+        Name = nar.Name
+        Rate = nar.Rate
+
+        Console.WriteLine("Using a class instance to pass values around")
+        Console.WriteLine(String.Format("Name = {0}, Rate = {1}", Name, Rate))
+
+        // Because class instances aren't inherently immutable, 
+        // class instance properties can be changed.
+
+        // Change the class properties.
+        nar.Name = Name.ToUpper()
+        nar.Rate = Rate * 2
+
+         Console.WriteLine("Using a class instance to pass values around")
+        Console.WriteLine(String.Format("Name = {0}, Rate = {1}", nar.Name, nar.Rate))
+
+    EndSr 
+
+    BegFunc GetNameAndRate Type(NameAndRate) 
+        // Declare a Tuple with a String and System.Decimal member. 
+        DclFld Result Type(NameAndRate) New()
+        
+        // Assign values to the work fields. In production you'd probably
+        // fetch these values from a disk file or some other data store.
+        Result.Name = 'Neil Young' 
+        Result.Rate = 72.12 
+        
+        // Return the class instance. Class instances aren't (by default) immutable
+        // and obey pass-by-reference semantics. 
+        LeaveSr Result 
+    EndFunc
+
+EndClass 
+
+BegClass NameAndRate 
+    DclProp Name Type(*String) Access(*Public) 
+    DclProp Rate Type(*Packed) Len(12,2) Access(*Public) 
+EndClass 
+
+
+
