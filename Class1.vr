@@ -47,9 +47,12 @@ BegClass TesterTuple
         Name = 'Neil Young' 
         Rate = 72.12 
 
-        // Instance a new Tuple. Tuples are immutable (their values can't 
+        // Instance a new Tuple. System.Tuples are immutable (their values can't 
         // change). This return value will be read-only to its consumer.
         LeaveSr *New Tuple(*Of *String, System.Decimal)(Name, Rate)  
+
+        // You can also use the newer Tuple.Create method:
+        // LeaveSr Tuple.Create(*of string, decimal)(Name, Rate) 
 
         /*
         The line of AVR above corresponds to this C#
